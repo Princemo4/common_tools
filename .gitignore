@@ -1,2 +1,20 @@
+# Dependencies
+node_modules/
+
+# Environment files and local secrets
 .env
+.env.*
+!.env.example
+
+# Generated application and deployment artifacts
 zipcodes_temp.txt*
+public/static/latest_deployment.txt
+/deploy.sh
+
+# Logs and test output
+*.log
+coverage/
+
+# OS metadata
+.DS_Store
+

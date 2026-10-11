@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "docker build -t princemo4/common-tools-088 . && docker login -u princemo4 && docker push princemo4/common-tools-088"
+  "deploy": "export TAGNAME=common_tools AWS_ACCOUNT=905406865537 REGION=us-east-1 SSH_HOST='admin@contabo-server1' DIRECTORY='~/applications' PLATFORM='linux/amd64' LOCAL_PUBLIC_DIR='public' && npm run deploy_script",
+  "deploy_script": "ID=$(uuidgen | tr -d '-' | cut -c1-8) && echo $ID > $LOCAL_PUBLIC_DIR/static/latest_deployment.txt && echo \"Using tagname: $TAGNAME, AWS account: $AWS_ACCOUNT, region: $REGION, platform: $PLATFORM, directory: $DIRECTORY, ssh host: $SSH_HOST, local public directory: $LOCAL_PUBLIC_DIR\" && aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com && docker build --platform $PLATFORM -t $TAGNAME . && docker tag $TAGNAME:latest $AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/$TAGNAME:latest && docker push $AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/$TAGNAME:latest && bash ./create_deploy_script.sh $TAGNAME $AWS_ACCOUNT $REGION $DIRECTORY && scp deploy.sh $SSH_HOST:$DIRECTORY/$TAGNAME/deploy.sh && ssh $SSH_HOST bash $DIRECTORY/$TAGNAME/deploy.sh && echo 'deployment_id:' $ID"
   },
   "keywords": [],
   "author": "",

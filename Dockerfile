@@ -1,21 +1,23 @@
-# Use official Node.js LTS Alpine image
-FROM node:lts-alpine
+# ---- Build Phase ----
+FROM node:lts-alpine as build
 
-# Set working directory
 WORKDIR /usr/src/app
 
-# Install dependencies
 COPY package*.json ./
 RUN npm install --production
 
-# Copy app source
 COPY . .
 
-# Expose the app port
-EXPOSE 3000
+# ---- Production Phase ----
+FROM node:lts-alpine
 
-# Set environment variables (optional, can be overridden)
-ENV PORT=3000
+WORKDIR /usr/src/app
+
+# Copy node_modules and built files from build image
+COPY --from=build /usr/src/app ./
+
+# Set default PORT if not provided
+ENV PORT=4001
 
 # Start the app
 CMD ["node", "app.js"]

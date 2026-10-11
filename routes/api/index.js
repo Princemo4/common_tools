@@ -1,13 +1,12 @@
 const express = require('express');
-const router = express.Router();
 
-module.exports = (redis, namespace) => {
-  router.get('/zipcode/:zipcode', async (req, res) => {
-    const zipcode = req.params.zipcode;
-    const data = await redis.get(`${namespace}${zipcode}`);
-    if (!data) return res.send(false);
-    res.json(JSON.parse(data));
+module.exports = tools => {
+  const router = express.Router();
+
+  tools.forEach(tool => {
+    // Each tool gets its own path under /api.
+    router.use(`/${tool.name}`, tool.router);
   });
+
   return router;
 };
-
